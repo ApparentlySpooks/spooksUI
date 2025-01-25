@@ -92,3 +92,10 @@ function SpooksUI.CreateButton(name, callback)
 
     return Button
 end
+
+-- Example Usage (Public UI Library Interface)
+SpooksUI.CreateButton("Example Button", function()
+    print("Button clicked!")
+end)
+
+return SpooksUI
