@@ -57,28 +57,20 @@ ContentFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 ContentFrame.BorderSizePixel = 0
 ContentFrame.Parent = MainFrame
 
--- Layout for Buttons and Toggles
-local UIListLayout = Instance.new("UIListLayout")
-UIListLayout.Padding = UDim.new(0, 10)
-UIListLayout.FillDirection = Enum.FillDirection.Vertical
-UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Parent = ContentFrame
-
 -- Internal state for tabs and current tab
 local Tabs = {}
 local CurrentTab = nil
 
 -- Function to switch tabs
 local function SwitchTab(tabName)
-    CurrentTab = tabName
-    for _, tab in pairs(Tabs) do
-        if tab.Name == tabName then
+    for name, tab in pairs(Tabs) do
+        if name == tabName then
             tab.Content.Visible = true
         else
             tab.Content.Visible = false
         end
     end
+    CurrentTab = tabName
 end
 
 -- Create a new tab
@@ -98,6 +90,7 @@ function SpooksUI.CreateTab(tabName)
     local TabContent = Instance.new("Frame")
     TabContent.Size = UDim2.new(1, 0, 1, 0)
     TabContent.Position = UDim2.new(0, 0, 0, 0)
+    TabContent.BackgroundTransparency = 1
     TabContent.Visible = false
     TabContent.Parent = ContentFrame
 
@@ -130,9 +123,6 @@ function SpooksUI.CreateButton(name, callback)
         return
     end
 
-    local TabContent = Tabs[CurrentTab].Content
-
-    -- Create button
     local Button = Instance.new("TextButton")
     Button.Name = name
     Button.Text = name
@@ -142,9 +132,8 @@ function SpooksUI.CreateButton(name, callback)
     Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     Button.Size = UDim2.new(1, -20, 0, 40)
     Button.BorderSizePixel = 0
-    Button.Parent = TabContent
+    Button.Parent = Tabs[CurrentTab].Content
 
-    -- Connect callback
     Button.MouseButton1Click:Connect(function()
         print(name .. " button clicked!")
         if callback then
@@ -162,17 +151,13 @@ function SpooksUI.CreateToggle(name, callback)
         return
     end
 
-    local TabContent = Tabs[CurrentTab].Content
-
-    -- Create toggle container
     local ToggleFrame = Instance.new("Frame")
     ToggleFrame.Name = name
     ToggleFrame.Size = UDim2.new(1, -20, 0, 40)
     ToggleFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     ToggleFrame.BorderSizePixel = 0
-    ToggleFrame.Parent = TabContent
+    ToggleFrame.Parent = Tabs[CurrentTab].Content
 
-    -- Toggle button
     local ToggleButton = Instance.new("TextButton")
     ToggleButton.Size = UDim2.new(0.8, 0, 1, 0)
     ToggleButton.Position = UDim2.new(0, 10, 0, 0)
@@ -183,7 +168,6 @@ function SpooksUI.CreateToggle(name, callback)
     ToggleButton.BackgroundTransparency = 1
     ToggleButton.Parent = ToggleFrame
 
-    -- Status indicator
     local StatusCircle = Instance.new("Frame")
     StatusCircle.Size = UDim2.new(0, 20, 0, 20)
     StatusCircle.Position = UDim2.new(0.85, 0, 0.5, -10)
