@@ -1,0 +1,94 @@
+-- Spooks UI Library
+local SpooksUI = {}
+
+-- Services
+local UserInputService = game:GetService("UserInputService")
+
+-- Create UI Elements
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 400, 0, 300)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Parent = ScreenGui
+
+-- Dragging functionality
+local dragging = false
+local dragInput, dragStart, startPos
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Text = "Spooks UI"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Parent = MainFrame
+
+-- Tabs
+local TabsFrame = Instance.new("Frame")
+TabsFrame.Size = UDim2.new(0, 100, 1, -30)
+TabsFrame.Position = UDim2.new(0, 0, 0, 30)
+TabsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+TabsFrame.BorderSizePixel = 0
+TabsFrame.Parent = MainFrame
+
+-- Central Content Frame
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Size = UDim2.new(1, -100, 1, -30)
+ContentFrame.Position = UDim2.new(0, 100, 0, 30)
+ContentFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ContentFrame.BorderSizePixel = 0
+ContentFrame.Parent = MainFrame
+
+-- Functionality for creating buttons, toggles, etc.
+function SpooksUI.CreateButton(name, callback)
+    local Button = Instance.new("TextButton")
+    Button.Text = name
+    Button.Font = Enum.Font.Gotham
+    Button.TextSize = 16
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    Button.Size = UDim2.new(1, -20, 0, 30)
+    Button.Position = UDim2.new(0, 10, 0, 10 + (#ContentFrame:GetChildren() - 1) * 40)
+    Button.Parent = ContentFrame
+
+    Button.MouseButton1Click:Connect(function()
+        if callback then
+            callback()
+        end
+    end)
+
+    return Button
+end
