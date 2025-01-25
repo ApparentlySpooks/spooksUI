@@ -13,7 +13,7 @@ ScreenGui.Parent = playerGui
 
 -- Main Frame
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 500, 0, 300) -- Adjusted size for tabs and buttons
+MainFrame.Size = UDim2.new(0, 500, 0, 300) -- Adjusted size for tabs and toggles
 MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BorderSizePixel = 0
@@ -41,7 +41,7 @@ TabsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 TabsFrame.BorderSizePixel = 0
 TabsFrame.Parent = MainFrame
 
--- Content Frame (Buttons and other elements)
+-- Content Frame (Buttons, Toggles, etc.)
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Size = UDim2.new(1, -120, 1, -50) -- Leaves space for tabs and title
 ContentFrame.Position = UDim2.new(0, 110, 0, 50)
@@ -49,7 +49,7 @@ ContentFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 ContentFrame.BorderSizePixel = 0
 ContentFrame.Parent = MainFrame
 
--- Layout for Buttons
+-- Layout for Buttons and Toggles
 local UIListLayout = Instance.new("UIListLayout")
 UIListLayout.Padding = UDim.new(0, 10)
 UIListLayout.FillDirection = Enum.FillDirection.Vertical
@@ -85,6 +85,67 @@ function SpooksUI.CreateButton(name, callback)
     end)
 
     return Button
+end
+
+-- Toggle creation function
+function SpooksUI.CreateToggle(name, callback)
+    if not ContentFrame then
+        warn("ContentFrame is not initialized!")
+        return
+    end
+
+    -- Create toggle container
+    local ToggleFrame = Instance.new("Frame")
+    ToggleFrame.Name = name
+    ToggleFrame.Size = UDim2.new(1, -20, 0, 40)
+    ToggleFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    ToggleFrame.BorderSizePixel = 0
+    ToggleFrame.Parent = ContentFrame
+
+    -- Toggle button
+    local ToggleButton = Instance.new("TextButton")
+    ToggleButton.Size = UDim2.new(0.8, 0, 1, 0)
+    ToggleButton.Position = UDim2.new(0, 10, 0, 0)
+    ToggleButton.Text = name
+    ToggleButton.Font = Enum.Font.Gotham
+    ToggleButton.TextSize = 16
+    ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleButton.BackgroundTransparency = 1
+    ToggleButton.Parent = ToggleFrame
+
+    -- Status indicator (Red/Green Circle)
+    local StatusCircle = Instance.new("Frame")
+    StatusCircle.Size = UDim2.new(0, 20, 0, 20)
+    StatusCircle.Position = UDim2.new(0.85, 0, 0.5, -10)
+    StatusCircle.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red (default: off)
+    StatusCircle.BorderSizePixel = 0
+    StatusCircle.AnchorPoint = Vector2.new(0.5, 0.5)
+    StatusCircle.Parent = ToggleFrame
+
+    -- Make the circle round
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(1, 0)
+    UICorner.Parent = StatusCircle
+
+    -- Toggle state
+    local isActive = false
+
+    -- Toggle behavior
+    ToggleButton.MouseButton1Click:Connect(function()
+        isActive = not isActive
+        if isActive then
+            StatusCircle.BackgroundColor3 = Color3.fromRGB(0, 255, 0) -- Green (on)
+        else
+            StatusCircle.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red (off)
+        end
+
+        print(name .. " toggled to " .. tostring(isActive))
+        if callback then
+            callback(isActive)
+        end
+    end)
+
+    return ToggleFrame
 end
 
 -- Return the library
