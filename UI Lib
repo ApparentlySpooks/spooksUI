@@ -78,6 +78,11 @@ ContentFrame.Parent = MainFrame
 
 -- Functionality for creating buttons
 function SpooksUI.CreateButton(name, callback)
+    if not ContentFrame then
+        warn("ContentFrame not initialized!")
+        return
+    end
+
     local Button = Instance.new("TextButton")
     Button.Text = name
     Button.Font = Enum.Font.Gotham
