@@ -111,9 +111,7 @@ function SpooksUI.CreateTab(tabName)
     end)
 
     -- Automatically switch to the first tab
-    if not CurrentTab then
-        SwitchTab(tabName)
-    end
+    SwitchTab(tabName)
 end
 
 -- Function to create a button in the current tab
